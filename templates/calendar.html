@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Calendar
+{% endblock %}
+
+{% block main %}
+    <h1 class="display-3">Calendar</h1>
+
+    {% for month in cal %}
+    {% set calindex = loop.index0 %}
+    {% if calindex == 0 %}
+        <div class='mb-3' style='visibility:hidden'>spacer</div>
+    {% endif %}
+    <div class="{{ 'hidden-calendar' if calindex != 3 }}" id='cal{{ calindex }}'>
+        <h5 class="mb-3">{{ month_names[calindex + 1] }}</h5>
+        <div class="mb-3">
+            <button type='button' class='btn btn-info' id='prevmonth{{ calindex }}' {% if calindex == 0 %} disabled {% endif %}>
+                &lt;&lt; {{ month_names[calindex] }}
+            </button>
+            <button type='button' class='btn btn-info' id='nextmonth{{ calindex }}' {% if calindex == 6 %} disabled {% endif %}>
+                {{ month_names[calindex + 2] }} &gt;&gt;
+            </button>
+        </div>
+        <table class="table table-striped-columns table-bordered border-info table-hover" id='table{{ calindex }}'>
+            <thead>
+                <tr>
+                    <th scope='col'>Sun</th>
+                    <th scope='col'>Mon</th>
+                    <th scope='col'>Tue</th>
+                    <th scope='col'>Wed</th>
+                    <th scope='col'>Thu</th>
+                    <th scope='col'>Fri</th>
+                    <th scope='col'>Sat</th>
+                </tr>
+            </thead>
+            <tbody class='table-group-divider'>
+                {% for week in month %}
+                <tr style='height:100%'>
+                    {% for day in week %}
+                    {% if day != 0 %}
+                    <td class='container'>
+                        <div class='row text-truncate' id="day{{ day }}">
+                            <div class='col-md-auto'>{{ day }}</div>
+                        </div>
+                    </td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+    <script>
+        const cals = {};
+
+        document.querySelectorAll('[id^="cal"]').forEach(el => {
+            let id = el.id.replace("cal", "");
+            cals[id] = el;
+        });
+
+        function displaynone(i, operation) {
+            let j;
+            if (operation == 'next') {j = i + 1;}
+            else {j = i - 1;}
+            // Active month
+            cals[i].classList.add("hidden-calendar");
+            // Soon to be active month
+            cals[j].classList.remove("hidden-calendar");
+        }
+        // Adds event listeners
+        prevmonthbtns = document.querySelectorAll('[id*="prevmonth"]');
+        nextmonthbtns = document.querySelectorAll('[id*="nextmonth"]');
+        for (let i = 0; i < nextmonthbtns.length; i++) {
+            nextmonthbtns[i].addEventListener('click', () => displaynone(i, 'next'));
+            prevmonthbtns[i].addEventListener('click', () => displaynone(i, 'prev'));
+        }
+
+        // Adds events
+        let enamesjson = {{ enames|tojson }};
+        let estartsjson = {{ estarts|tojson }};
+        let etimesjson = {{ etimes|tojson }};
+        let elinksjson = {{ elinks|tojson }}
+        let daylookup = [];
+        let month3 = document.querySelectorAll('[id*="table"]')
+        for (let i = 0; i < 7; i++) {
+            daylookup.push(Array.from(month3[i].querySelectorAll('[id*="day"]')));
+        }
+        for (let i = 0; i < enamesjson.length; i++) {
+            let month = parseInt(estartsjson[i].substring(5,7));
+            let selectmonth = daylookup[month - {{month2}}];
+            if (selectmonth == null) {selectmonth = daylookup[month + 12 - {{month2}}];}
+            let k = 0;
+            let day = parseInt(estartsjson[i].substring(8, 10));
+            for (let j = 0; j < etimesjson[i]; j++) {
+                let dayIndex = day + j - k - 1;
+
+                if (dayIndex >= selectmonth.length) {
+                    k = j + day - 1;
+                    month += 1;
+                    selectmonth = daylookup[(month - {{month2}}) % daylookup.length];
+                    dayIndex = day + j - k - 1;
+                }
+
+                let selected = selectmonth[dayIndex];
+                if (selected) {
+                    let a = document.createElement('a');
+                    a.className = 'row btn btn-outline-info btn-sm text-truncate mx-2 my-1 w-75';
+                    a.textContent = enamesjson[i];
+                    a.href = elinksjson[i]
+                    selected.appendChild(a);
+                }
+            }
+        }
+
+    </script>
+{% endblock %}
+

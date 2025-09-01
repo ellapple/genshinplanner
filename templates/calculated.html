@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+{% endblock %}
+
+{% block main %}
+    <h1 class='display-1 mb-5'>Result</h1>
+    <div class='border border-info py-1 mb-3'>
+        <dl class="row my-0">
+            <dt class="col-sm-6 my-0">Total</dt>
+            <dd class="col-sm-6 my-0" id='value'>{{ "%0.2f" | format(realtotal | float) }}</dd>
+        </dl>
+    </div>
+    <table class='table align-middle border'>
+        <thead>
+            <tr>
+                <th scope='col'>Source</th>
+                <th scope='col'><button class='btn btn-info py-0 fw-bold text-reset' id='valueSwitch' type='button'>Amount (primos)</button></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for source in total %}
+            <tr>
+                <td>{{ source | capitalize }}</td>
+                <td id='value'>{{ "%0.2f" | format(total[source] | float) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        let values = document.querySelectorAll('#value');
+        let fateDisplay = false;
+        let valueSwitch = document.querySelector('#valueSwitch');
+        let primos = [];
+        primos.fill(-1);
+        let fates = [];
+        fates.fill(-1);
+        for (let i = 0; i < values.length; i++) {
+            primos[i] = parseFloat(values[i].innerHTML).toFixed(2);
+            fates[i] = (parseFloat(values[i].innerHTML) / 160).toFixed(2);
+        }
+        valueSwitch.addEventListener('click', function() {
+            for (let i = 0; i < values.length; i++) {
+                if (fateDisplay == false) {
+                    values[i].innerHTML = fates[i];
+                    if (i == values.length - 1) {
+                        fateDisplay = true;
+                        valueSwitch.innerHTML = 'Amount (fates)';}
+                }
+                else {
+                    values[i].innerHTML = primos[i];
+                    if (i == values.length - 1) {
+                        fateDisplay = false;
+                        valueSwitch.innerHTML = 'Amount (primos)';
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

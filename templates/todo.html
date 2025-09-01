@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    To-do List
+{% endblock %}
+
+{% block main %}
+    <h1 class='display-1 mb-2'>To-do List</h1>
+    <h5 class='mb-5'>{{ today | upper}}</h5>
+    {% if not login %}
+        <p class='lead mb-2'>Add a task</p>
+        <form class='row g-4 justify-content-center mb-5' action='/todo' method='post'>
+            <div class='col-auto'>
+                <input class='form-control' autocomplete='off' name='name' placeholder='Name' type='text'>
+            </div>
+            <div class='col-auto'>
+                <input class='form-control' autocomplete='off' name='desc' placeholder='Description' type='text'>
+            </div>
+            <div class='col-auto'>
+                <input class='form-control' autocomplete='off' name='interval' placeholder='Interval (days)' type='number'>
+            </div>
+            <div class='col-auto'>
+                <button class='btn btn-info' type='submit'>Add</button>
+            </div>
+        </form>
+        <div class="accordion" id='accordion'>
+            {% for item in items %}
+            {% set index = items.index(item) %}
+            <div class="accordion-item" id='{{ item.id }}'>
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed focus-ring focus-ring-info" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ index }}">
+                        <input class="form-check-input me-1 {% if not item.repeat %} delete-on-check {% endif %}" type="checkbox" value="" {% if item.completed == 0 and item.completed != 1 %}checked{% endif %} id='{{ index }}Check'>
+                        <label class="form-check-label mx-1" for="{{ index }}Check">{{ item.name }}</label>
+                    </button>
+                </h2>
+                <div id="collapse{{ index }}" class="accordion-collapse collapse" data-bs-parent="#accordion">
+                    <div class="accordion-body row align-items-center">
+                        <div class='col-9' id='text{{ index }}'>
+                            {% if item.repeat %}
+                            Repeat: Every {{ item.repeat }} day(s)
+                            {% else %}
+                            Never repeated
+                            {% endif %}
+                            <p class='repeat' hidden>{{ item.repeat }}</p>
+                            <p class='item_id' hidden>{{ item.id }}</p>
+                            <p class='desc'>{{ item.desc }}</p>
+                        </div>
+                        <div class='col-3 row justify-content-md-center'>
+                            <form class='w-100 row' action='/todo' method='post'>
+                                <input name='delete_id' value='{{ item.id }}' hidden>
+                                <button class='btn btn-info col' id='remove{{ index }}' type='submit'>Remove</button>
+                            </form>
+                            <div class='row'>
+                                <button class='btn btn-info w-100 col' id='edit{{ index }}' type='button'>Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+    <h1>This page is only accessible if you are logged in!</h1>
+    <h3>Please <a href='/login'>log in</a>!</h3>
+    {% endif %}
+    <script>
+        editbtns = document.querySelectorAll('[id*="edit"]')
+        checkboxes = document.querySelectorAll('[id*="Check"]');
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].addEventListener('change', async function() {
+                if (checkboxes[i].className.includes('delete-on-check')) {
+                    if (this.checked) {
+                        let div = this.closest('div');
+                        let id = div.getAttribute('id');
+                        await fetch(`/api/todo/${id}`, {
+                            method: 'DELETE'
+                        });
+                        div.remove()
+                    }
+                }
+                else {
+                    let div = this.closest('div');
+                    let id = div.getAttribute('id');
+                    await fetch(`/api/todo/${id}`, {
+                        method: 'GET'
+                    });
+                }
+            });
+        }
+        let texts = [];
+        let saves = [];
+        let text_form = false;
+        for (let i = 0; i < editbtns.length; i++) {
+            texts.push(document.querySelector(`#text${i}`))
+            saves.push(texts[i].innerHTML);
+            editbtns[i].addEventListener('click', function() {
+                if (text_form == false) {
+                    let save_desc = texts[i].querySelector('.desc').innerHTML;
+                    let save_repeat = texts[i].querySelector('.repeat').innerHTML;
+                    let save_id = texts[i].querySelector('.item_id').innerHTML;
+                    texts[i].innerHTML = `<form action="/todo" method="post"><input class="form-control" autocomplete="off" placeholder="Interval (current = ${save_repeat})" type="number" name="edit-repeat"><input class="form-control mt-3" autocomplete="off" placeholder="Description (current = ${save_desc})" type="text" name="edit-desc"><input name="id" value="${save_id}" hidden><button type="submit" class="btn btn-info mt-3">Submit</button></form>`;
+                    text_form = true;
+                }
+                else {
+                    texts[i].innerHTML = saves[i]
+                    text_form = false;
+                }
+            });
+        }
+    </script>
+{% endblock %}

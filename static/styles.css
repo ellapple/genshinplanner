@@ -1,0 +1,19 @@
+.nav {
+    --bs-nav-link-color: var(--bs-info-bg-subtle);
+    --bs-nav-link-hover-color: var(--bs-light-text-emphasis);
+    box-shadow: inset 0 -0.125rem 0 0 var(--bs-info-text-emphasis);
+}
+
+.hidden-calendar {
+    display: none;
+}
+
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.accordion {
+    --bs-accordion-active-bg: var(--bs-info-bg-subtle);
+    --bs-accordion-active-color: var(--bs-info-text-emphasis);
+}

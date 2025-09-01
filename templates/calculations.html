@@ -1,0 +1,200 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Primogem Calculations
+{% endblock %}
+
+{% block main %}
+    <h1 class='display-1 mb-5'>Primogem Calculations</h1>
+
+    <form action='/calculations' method='post'>
+    <h5 class='mb-2'>Static Sources</h5>
+    <table class='table align-middle border'>
+        <thead>
+            <tr>
+                <th scope='col'>Source</th>
+                <th scope='col'><button class='btn btn-info py-0 fw-bold text-reset' id='valueSwitch' type='button'>Amount (primos)</button></th>
+                <th scope='col'>Interval</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope='row'>Commissions</th>
+                <td id='value'>2520</td>
+                <td>per version</td>
+            </tr>
+            <tr>
+                <th scope='row'>HoyoLab Check-In</th>
+                <td id='value'>60</td>
+                <td>per month</td>
+            </tr>
+            <tr>
+                <th scope='row'>Trial Runs</th>
+                <td id='value'>80</td>
+                <td>per version</td>
+            </tr>
+        </tbody>
+    </table>
+    <h5 class='mb-2'>Exploration</h5>
+    <table class='table align-middle border'>
+        <thead>
+            <th scope='col'>Region</th>
+            <th scope='col'>Estimation Mode</th>
+            <th scope='col'>Percentage</th>
+        </thead>
+        <tbody>
+            {% for region in regions %}
+            <tr>
+                <th scope='row'>{{ region }}</th>
+                <td>
+                    <div class="btn-group">
+                        <input type="radio" class="btn-check" name="btnestimate{{ region|lower }}" id="elow{{ region|lower }}" value='low' autocomplete="off">
+                        <label class="btn btn-outline-info" for="elow{{ region|lower }}">Low</label>
+                        <input type="radio" class="btn-check" name="btnestimate{{ region|lower }}" id="emid{{ region|lower }}" value='mid' autocomplete="off" checked>
+                        <label class="btn btn-outline-info" for="emid{{ region|lower }}">Mid</label>
+                        <input type="radio" class="btn-check" name="btnestimate{{ region|lower }}" id="ehigh{{ region|lower }}" value='high' autocomplete="off">
+                        <label class="btn btn-outline-info" for="ehigh{{ region|lower }}">High</label>
+                    </div>
+                </td>
+                <td>
+                    <input class='form-control w-100' autocomplete='off' type='number' name='{{ region | lower }}%' placeholder='Exploration %' style='text-align: center'>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h5 class='mb-2'>Paid</h5>
+    <table class='table align-middle border'>
+        <thead>
+            <th scope='col'>Source</th>
+            <th scope='col'><button class='btn btn-info py-0 fw-bold text-reset' id='valueSwitch' type='button'>Amount (primos)</button></th>
+            <th scope='col'>Interval</th>
+            <td scope='col'>Applicability</td>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope='row'>Blessing of the Welkin Moon</th>
+                <td id='value'>2700</td>
+                <td>per purchase/30 days (+300 on purchase)</td>
+                <td><input class="form-check-input" type="checkbox" value="welkin" name="welkinCheck"></td>
+            </tr>
+            <tr>
+                <th scope='row'>Battlepass</th>
+                <td id='value'>1320</td>
+                <td>per version</td>
+                <td><input class="form-check-input" type="checkbox" value="bp" name="bpCheck"></td>
+            </tr>
+        </tbody>
+    </table>
+    <h5 class='mb-2'>Endgame Content</h5>
+    <table class='table align-middle border'>
+        <thead>
+            <th scope='col'>Source</th>
+            <th scope='col'><button class='btn btn-info py-0 fw-bold text-reset' id='valueSwitch' type='button'>Amount (primos)</button></th>
+            <th scope='col'>Interval</th>
+            <th scope='col'>Expected Result</th>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope='row'>Spiral Abyss</th>
+                <td id='value'>800</td>
+                <td>per month, assuming all floors cleared with 9 stars (resets on the 16th)</td>
+                <td>
+                    <input class='form-control w-100' autocomplete='off' type='number' name='spiralabyssfloor' placeholder='Floor' style='text-align: center'>
+                </td>
+            </tr>
+            <tr>
+                <th scope='row'>Imaginarium Theater</th>
+                <td id='value'>800</td>
+                <td>per month, assuming all acts cleared (resets on the 1st)</td>
+                <td><input class='form-control w-100' autocomplete='off' type='number' name='theateract' placeholder='Act' style='text-align: center'></td>
+            </tr>
+            <tr>
+                <th scope='row'>Stygian Onslaught</th>
+                <td id='value'>450</td>
+                <td>per version, assuming normal, advancing, and hard have been cleared</td>
+                <td>
+                    <select class="form-select" name='onslaught'>
+                        <option selected disabled>Difficulty</option>
+                        <option value="0">None</option>
+                        <option value="1">Normal</option>
+                        <option value="2">Advancing</option>
+                        <option value="3">Hard</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h5 class='mb-2'>Paimon's Bargains</h5>
+    <table class='table align-middle border'>
+        <thead>
+            <th scope='col'>Source</th>
+            <th scope='col'><button class='btn btn-info py-0 fw-bold text-reset' id='valueSwitch' type='button'>Amount (primos)</button></th>
+            <th scope='col'>Cost</th>
+            <th scope='col'>Limit</th>
+            <th scope='col'>Input</th>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope='row'>Starglitter Exchange</th>
+                <td id='value'>160</td>
+                <td>5 starglitter</td>
+                <td>N/A</td>
+                <td><input class='form-control w-100' autocomplete='off' type='number' name='starglitter' placeholder='Starglitter' style='text-align: center'></td>
+            </tr>
+            <tr>
+                <th scope='row'>Stardust Exchange</th>
+                <td id='value'>160</td>
+                <td>75 stardust</td>
+                <td>5 per month</td>
+                <td><input class='form-control w-100' autocomplete='off' type='number' name='stardust' placeholder='Stardust' style='text-align: center'></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class='mb-3 row w-50 mx-auto'>
+        <div class='col'>
+            <label for="start_date" class="form-label">Start date: </label>
+            <input class='form-control' type='date' name='start_date'>
+        </div>
+        <div class='col'>
+            <label for="end_date" class="form-label">End date: </label>
+            <input class='form-control' type='date' name='end_date'>
+        </div>
+        <div class='row mt-3 w-100 mx-auto'>
+            <button name='submitDates' class='btn btn-info' type='submit'>Calculate!</button>
+            <p><small>- All intertwined fates and genesis crystals will be converted to primogems, while acquaint fates will not be included in the final result.<br>- Welkin will be calculated assuming it will be bought today<br>- This calculation assumes that all available limited-time primos have already been claimed</small></p>
+        </div>
+    </div>
+
+    </form>
+    <script>
+        let values = document.querySelectorAll('#value')
+        let fateDisplay = false;
+        let valueSwitch = document.querySelectorAll('#valueSwitch');
+        for (let j = 0; j < valueSwitch.length; j++) {
+            valueSwitch[j].addEventListener('click', function() {
+                let total = 0;
+                for (let i = 0; i < values.length; i++) {
+                    total++;
+                    if (fateDisplay == false) {
+                        values[i].innerHTML = parseFloat(values[i].innerHTML) / 160;
+                        if (i == values.length - 1) {
+                            fateDisplay = true;
+                            for (let k = 0; k < valueSwitch.length; k++) {
+                            valueSwitch[k].innerHTML = 'Amount (fates)';}
+                        }
+                    }
+                    else {
+                        values[i].innerHTML = parseFloat(values[i].innerHTML) * 160;
+                        if (i == values.length - 1) {
+                            fateDisplay = false;
+                            for (let k = 0; k < valueSwitch.length; k++) {
+                            valueSwitch[k].innerHTML = 'Amount (primos)';}
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

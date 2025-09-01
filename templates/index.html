@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <h1 class='display-1 {% if user %}mb-2{% else %}mb-5{% endif %}'>Home</h1>
+    {% if user %}
+    <h5 class='mb-5'>{{ user.username | upper }}</h5>
+    <!-- <dl class='row'>
+        <dt class='col-6'>Primogems</dt>
+        <dd class='col-6'>{{ user.primogems }}</dd>
+    </dl>
+    -->
+    <h5 class='mb-5'>You have {{ unfinished }} unfinished item(s) on your <a href='/todo' class='link-info'>to-do list</a> for today.</h5>
+    {% endif %}
+    <h5 class='mb-2'>Events running today, {{ month }} {{ day }}, {{ year }}</h5>
+    <table class='table border col-auto'>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.name }}</td>
+            <td>{{ event.days_left }} day(s) and {{ event.hours_left }} hour(s) left</td>
+            <td>{{ event.type | capitalize }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
