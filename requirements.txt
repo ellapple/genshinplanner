@@ -1,0 +1,8 @@
+Flask
+Flask-Session
+Werkzeug
+cs50
+calendar
+datetime
+requests
+beautifulsoup4
