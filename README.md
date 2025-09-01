@@ -1,7 +1,7 @@
 # Genshin Planner
 ## Watch the demo [here](https://youtu.be/enRZK2Se8C0)!
 ## Description
-The Genshin Planner is a website designed to help keep you motivated and save for the characters you want, allowing users to view events running within a 7 month period, a to do list to keep track of your daily (or weekly) tasks, and a handy savings calculator that'll tell you how many primogems you can earn in a time you set.
+The Genshin Planner is a website made for CS50x designed to help keep you motivated and save for the characters you want, allowing users to view events running within a 7 month period, a to do list to keep track of your daily (or weekly) tasks, and a handy savings calculator that'll tell you how many primogems you can earn in a time you set.
 ## Files
 ### Structure
 ```
